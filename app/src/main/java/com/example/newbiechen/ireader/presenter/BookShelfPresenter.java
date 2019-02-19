@@ -3,7 +3,7 @@ package com.example.newbiechen.ireader.presenter;
 import com.example.newbiechen.ireader.RxBus;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.bean.DownloadTaskBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.remote.RemoteRepository;
@@ -34,19 +34,19 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
     private static final String TAG = "BookShelfPresenter";
 
     @Override
-    public void refreshCollBooks() {
-        List<CollBookBean> collBooks = BookRepository
-                .getInstance().getCollBooks();
-        mView.finishRefresh(collBooks);
+    public void refreshFavoriteBooks() {
+        List<FavoriteBookBean> favoriteBooks = BookRepository
+                .getInstance().getFavoriteBooks();
+        mView.finishRefresh(favoriteBooks);
     }
 
     @Override
-    public void createDownloadTask(CollBookBean collBookBean) {
+    public void createDownloadTask(FavoriteBookBean favoriteBookBean) {
         DownloadTaskBean task = new DownloadTaskBean();
-        task.setTaskName(collBookBean.getTitle());
-        task.setBookId(collBookBean.get_id());
-        task.setBookChapters(collBookBean.getBookChapters());
-        task.setLastChapter(collBookBean.getBookChapters().size());
+        task.setTaskName(favoriteBookBean.getTitle());
+        task.setBookId(favoriteBookBean.get_id());
+        task.setBookChapters(favoriteBookBean.getBookChapters());
+        task.setLastChapter(favoriteBookBean.getBookChapters().size());
 
         RxBus.getInstance().post(task);
     }
@@ -56,14 +56,14 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
     public void loadRecommendBooks(String gender) {
         Disposable disposable = RemoteRepository.getInstance()
                 .getRecommendBooks(gender)
-                .doOnSuccess(new Consumer<List<CollBookBean>>() {
+                .doOnSuccess(new Consumer<List<FavoriteBookBean>>() {
                     @Override
-                    public void accept(List<CollBookBean> collBooks) throws Exception{
+                    public void accept(List<FavoriteBookBean> favoriteBooks) throws Exception{
                         //更新目录
-                        updateCategory(collBooks);
+                        updateCategory(favoriteBooks);
                         //异步存储到数据库中
                         BookRepository.getInstance()
-                                .saveCollBooksWithAsync(collBooks);
+                                .saveFavoriteBooksWithAsync(favoriteBooks);
                     }
                 })
                 .compose(RxUtils::toSimpleSingle)
@@ -85,56 +85,56 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
 
     //需要修改
     @Override
-    public void updateCollBooks(List<CollBookBean> collBookBeans) {
-        if (collBookBeans == null || collBookBeans.isEmpty()) return;
-        List<CollBookBean> collBooks = new ArrayList<>(collBookBeans);
-        List<Single<BookDetailBean>> observables = new ArrayList<>(collBooks.size());
-        Iterator<CollBookBean> it = collBooks.iterator();
+    public void updateFavoriteBooks(List<FavoriteBookBean> favoriteBookBeans) {
+        if (favoriteBookBeans == null || favoriteBookBeans.isEmpty()) return;
+        List<FavoriteBookBean> favoriteBooks = new ArrayList<>(favoriteBookBeans);
+        List<Single<BookDetailBean>> observables = new ArrayList<>(favoriteBooks.size());
+        Iterator<FavoriteBookBean> it = favoriteBooks.iterator();
         while (it.hasNext()){
-            CollBookBean collBook = it.next();
+            FavoriteBookBean favoriteBook = it.next();
             //删除本地文件
-            if (collBook.isLocal()) {
+            if (favoriteBook.isLocal()) {
                 it.remove();
             }
             else {
                 observables.add(RemoteRepository.getInstance()
-                        .getBookDetail(collBook.get_id()));
+                        .getBookDetail(favoriteBook.get_id()));
             }
         }
         //zip可能不是一个好方法。
-        Single.zip(observables, new Function<Object[], List<CollBookBean>>() {
+        Single.zip(observables, new Function<Object[], List<FavoriteBookBean>>() {
             @Override
-            public List<CollBookBean> apply(Object[] objects) throws Exception {
-                List<CollBookBean> newCollBooks = new ArrayList<CollBookBean>(objects.length);
-                for (int i=0; i<collBooks.size(); ++i){
-                    CollBookBean oldCollBook = collBooks.get(i);
-                    CollBookBean newCollBook = ((BookDetailBean)objects[i]).getCollBookBean();
-                    //如果是oldBook是update状态，或者newCollBook与oldBook章节数不同
-                    if (oldCollBook.isUpdate() ||
-                            !oldCollBook.getLastChapter().equals(newCollBook.getLastChapter())){
-                        newCollBook.setUpdate(true);
+            public List<FavoriteBookBean> apply(Object[] objects) throws Exception {
+                List<FavoriteBookBean> newFavoriteBooks = new ArrayList<FavoriteBookBean>(objects.length);
+                for (int i=0; i<favoriteBooks.size(); ++i){
+                    FavoriteBookBean oldFavoriteBook = favoriteBooks.get(i);
+                    FavoriteBookBean newFavoriteBook = ((BookDetailBean)objects[i]).getFavoriteBookBean();
+                    //如果是oldBook是update状态，或者newFavoriteBook与oldBook章节数不同
+                    if (oldFavoriteBook.isUpdate() ||
+                            !oldFavoriteBook.getLastChapter().equals(newFavoriteBook.getLastChapter())){
+                        newFavoriteBook.setUpdate(true);
                     }
                     else {
-                        newCollBook.setUpdate(false);
+                        newFavoriteBook.setUpdate(false);
                     }
-                    newCollBook.setLastRead(oldCollBook.getLastRead());
-                    newCollBooks.add(newCollBook);
+                    newFavoriteBook.setLastRead(oldFavoriteBook.getLastRead());
+                    newFavoriteBooks.add(newFavoriteBook);
                     //存储到数据库中
                     BookRepository.getInstance()
-                            .saveCollBooks(newCollBooks);
+                            .saveFavoriteBooks(newFavoriteBooks);
                 }
-                return newCollBooks;
+                return newFavoriteBooks;
             }
         })
                 .compose(RxUtils::toSimpleSingle)
-                .subscribe(new SingleObserver<List<CollBookBean>>() {
+                .subscribe(new SingleObserver<List<FavoriteBookBean>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
                         addDisposable(d);
                     }
 
                     @Override
-                    public void onSuccess(List<CollBookBean> value) {
+                    public void onSuccess(List<FavoriteBookBean> value) {
                         //跟原先比较
                         mView.finishUpdate();
                         mView.complete();
@@ -150,15 +150,15 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
                 });
     }
 
-    //更新每个CollBook的目录
-    private void updateCategory(List<CollBookBean> collBookBeans){
-        List<Single<List<BookChapterBean>>> observables = new ArrayList<>(collBookBeans.size());
-        for (CollBookBean bean : collBookBeans){
+    //更新每个FavoriteBook的目录
+    private void updateCategory(List<FavoriteBookBean> favoriteBookBeans){
+        List<Single<List<BookChapterBean>>> observables = new ArrayList<>(favoriteBookBeans.size());
+        for (FavoriteBookBean bean : favoriteBookBeans){
             observables.add(
                     RemoteRepository.getInstance().getBookChapters(bean.get_id())
             );
         }
-        Iterator<CollBookBean> it = collBookBeans.iterator();
+        Iterator<FavoriteBookBean> it = favoriteBookBeans.iterator();
         //执行在上一个方法中的子线程中
         Single.concat(observables)
                 .subscribe(
@@ -168,7 +168,7 @@ public class BookShelfPresenter extends RxPresenter<BookShelfContract.View>
                                 bean.setId(MD5Utils.strToMd5By16(bean.getLink()));
                             }
 
-                            CollBookBean bean = it.next();
+                            FavoriteBookBean bean = it.next();
                             bean.setLastRead(StringUtils.
                                     dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
                             bean.setBookChapters(chapterList);

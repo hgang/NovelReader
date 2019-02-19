@@ -12,7 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 
 import com.example.newbiechen.ireader.model.bean.BookRecordBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.local.ReadSettingManager;
 import com.example.newbiechen.ireader.utils.Constant;
@@ -24,7 +24,6 @@ import com.example.newbiechen.ireader.utils.StringUtils;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +57,7 @@ public abstract class PageLoader {
     // 当前章节列表
     protected List<TxtChapter> mChapterList;
     // 书本对象
-    protected CollBookBean mCollBook;
+    protected FavoriteBookBean mFavoriteBook;
     // 监听器
     protected OnPageChangeListener mPageChangeListener;
 
@@ -142,10 +141,10 @@ public abstract class PageLoader {
     private int mLastChapterPos = 0;
 
     /*****************************init params*******************************/
-    public PageLoader(PageView pageView, CollBookBean collBook) {
+    public PageLoader(PageView pageView, FavoriteBookBean favoriteBook) {
         mPageView = pageView;
         mContext = pageView.getContext();
-        mCollBook = collBook;
+        mFavoriteBook = favoriteBook;
         mChapterList = new ArrayList<>(1);
 
         // 初始化数据
@@ -503,8 +502,8 @@ public abstract class PageLoader {
      *
      * @return
      */
-    public CollBookBean getCollBook() {
-        return mCollBook;
+    public FavoriteBookBean getFavoriteBook() {
+        return mFavoriteBook;
     }
 
     /**
@@ -552,7 +551,7 @@ public abstract class PageLoader {
             return;
         }
 
-        mBookRecord.setBookId(mCollBook.get_id());
+        mBookRecord.setBookId(mFavoriteBook.get_id());
         mBookRecord.setChapter(mCurChapterPos);
 
         if (mCurPage != null) {
@@ -571,7 +570,7 @@ public abstract class PageLoader {
      */
     private void prepareBook() {
         mBookRecord = BookRepository.getInstance()
-                .getBookRecord(mCollBook.get_id());
+                .getBookRecord(mFavoriteBook.get_id());
 
         if (mBookRecord == null) {
             mBookRecord = new BookRecordBean();

@@ -1,7 +1,7 @@
 package com.example.newbiechen.ireader.widget.page;
 
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.local.Void;
 import com.example.newbiechen.ireader.utils.Charset;
@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -65,8 +64,8 @@ public class LocalPageLoader extends PageLoader {
 
     private Disposable mChapterDisp = null;
 
-    public LocalPageLoader(PageView pageView, CollBookBean collBook) {
-        super(pageView, collBook);
+    public LocalPageLoader(PageView pageView, FavoriteBookBean favoriteBook) {
+        super(pageView, favoriteBook);
         mStatus = STATUS_PARING;
     }
 
@@ -319,16 +318,16 @@ public class LocalPageLoader extends PageLoader {
     @Override
     public void saveRecord() {
         super.saveRecord();
-        //修改当前COllBook记录
-        if (mCollBook != null && isChapterListPrepare) {
-            //表示当前CollBook已经阅读
-            mCollBook.setIsUpdate(false);
-            mCollBook.setLastChapter(mChapterList.get(mCurChapterPos).getTitle());
-            mCollBook.setLastRead(StringUtils.
+        //修改当前FavoriteBook记录
+        if (mFavoriteBook != null && isChapterListPrepare) {
+            //表示当前FavoriteBook已经阅读
+            mFavoriteBook.setIsUpdate(false);
+            mFavoriteBook.setLastChapter(mChapterList.get(mCurChapterPos).getTitle());
+            mFavoriteBook.setLastRead(StringUtils.
                     dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
             //直接更新
             BookRepository.getInstance()
-                    .saveCollBook(mCollBook);
+                    .saveFavoriteBook(mFavoriteBook);
         }
     }
 
@@ -344,18 +343,18 @@ public class LocalPageLoader extends PageLoader {
     @Override
     public void refreshChapterList() {
         // 对于文件是否存在，或者为空的判断，不作处理。 ==> 在文件打开前处理过了。
-        mBookFile = new File(mCollBook.getCover());
+        mBookFile = new File(mFavoriteBook.getCover());
         //获取文件编码
         mCharset = FileUtils.getCharset(mBookFile.getAbsolutePath());
 
         String lastModified = StringUtils.dateConvert(mBookFile.lastModified(), Constant.FORMAT_BOOK_DATE);
 
         // 判断文件是否已经加载过，并具有缓存
-        if (!mCollBook.isUpdate() && mCollBook.getUpdated() != null
-                && mCollBook.getUpdated().equals(lastModified)
-                && mCollBook.getBookChapters() != null) {
+        if (!mFavoriteBook.isUpdate() && mFavoriteBook.getUpdated() != null
+                && mFavoriteBook.getUpdated().equals(lastModified)
+                && mFavoriteBook.getBookChapters() != null) {
 
-            mChapterList = convertTxtChapter(mCollBook.getBookChapters());
+            mChapterList = convertTxtChapter(mFavoriteBook.getBookChapters());
             isChapterListPrepare = true;
 
             //提示目录加载完成
@@ -406,11 +405,11 @@ public class LocalPageLoader extends PageLoader {
                             bean.setEnd(chapter.getEnd());
                             bookChapterBeanList.add(bean);
                         }
-                        mCollBook.setBookChapters(bookChapterBeanList);
-                        mCollBook.setUpdated(lastModified);
+                        mFavoriteBook.setBookChapters(bookChapterBeanList);
+                        mFavoriteBook.setUpdated(lastModified);
 
                         BookRepository.getInstance().saveBookChaptersWithAsync(bookChapterBeanList);
-                        BookRepository.getInstance().saveCollBook(mCollBook);
+                        BookRepository.getInstance().saveFavoriteBook(mFavoriteBook);
 
                         // 加载并显示当前章节
                         openChapter();

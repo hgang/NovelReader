@@ -6,7 +6,7 @@
 	android:background="@drawable/selector_common_bg">
 	
 	<ImageView
-		android:id="@+id/coll_book_iv_cover"
+		android:id="@+id/favorite_book_iv_cover"
 		android:layout_width="45dp"
 		android:layout_height="60dp"
 		android:layout_alignParentLeft="true"
@@ -22,11 +22,11 @@
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
 		android:layout_margin="10dp"
-		android:layout_toRightOf="@+id/coll_book_iv_cover"
+		android:layout_toRightOf="@+id/favorite_book_iv_cover"
 		android:orientation="vertical">
 		
 		<TextView
-			android:id="@+id/coll_book_tv_name"
+			android:id="@+id/favorite_book_tv_name"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:ellipsize="end"
@@ -37,22 +37,22 @@
 			tools:text="逆鳞"/>
 		
 		<TextView
-			android:id="@+id/coll_book_tv_lately_update"
+			android:id="@+id/favorite_book_tv_lately_update"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/coll_book_tv_name"
+			android:layout_below="@id/favorite_book_tv_name"
 			android:layout_marginTop="4dp"
 			android:textSize="12sp"
 			android:textColor="@color/nb.text.common_h2"
 			tools:text="17小时前:"/>
 		
 		<TextView
-			android:id="@+id/coll_book_tv_chapter"
+			android:id="@+id/favorite_book_tv_chapter"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignBottom="@id/coll_book_tv_lately_update"
+			android:layout_alignBottom="@id/favorite_book_tv_lately_update"
 			android:layout_marginTop="4dp"
-			android:layout_toRightOf="@id/coll_book_tv_lately_update"
+			android:layout_toRightOf="@id/favorite_book_tv_lately_update"
 			android:ellipsize="end"
 			android:maxEms="14"
 			android:maxLines="1"
@@ -62,7 +62,7 @@
 	</RelativeLayout>
 	
 	<ImageView
-		android:id="@+id/coll_book_iv_top"
+		android:id="@+id/favorite_book_iv_top"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
@@ -71,7 +71,7 @@
 		tools:visibility="visible"/>
 	
 	<CheckBox
-		android:id="@+id/coll_book_cb_selected"
+		android:id="@+id/favorite_book_cb_selected"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
@@ -81,7 +81,7 @@
 		tools:visibility="visible"/>
 	
 	<ImageView
-		android:id="@+id/coll_book_iv_red_rot"
+		android:id="@+id/favorite_book_iv_red_rot"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"

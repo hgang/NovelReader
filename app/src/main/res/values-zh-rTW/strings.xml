@@ -24,7 +24,7 @@
         <item>總榜</item>
     </string-array>
     
-    <!--CollBook的长按点击-->
+    <!--FavoriteBook的长按点击-->
     <string-array name="nb_menu_net_book">
         <item>@string/nb.menu.action.top</item>
         <item>@string/nb.menu.action.cache</item>

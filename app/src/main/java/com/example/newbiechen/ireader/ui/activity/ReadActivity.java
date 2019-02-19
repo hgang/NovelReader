@@ -34,7 +34,7 @@ import android.widget.TextView;
 
 import com.example.newbiechen.ireader.R;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.local.ReadSettingManager;
 import com.example.newbiechen.ireader.presenter.ReadPresenter;
@@ -70,7 +70,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
         implements ReadContract.View {
     private static final String TAG = "ReadActivity";
     public static final int REQUEST_MORE_SETTING = 1;
-    public static final String EXTRA_COLL_BOOK = "extra_coll_book";
+    public static final String EXTRA_FAVORITE_BOOK = "extra_favorite_book";
     public static final String EXTRA_IS_COLLECTED = "extra_is_collected";
 
     // 注册 Brightness 的 uri
@@ -128,7 +128,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     private Animation mBottomInAnim;
     private Animation mBottomOutAnim;
     private CategoryAdapter mCategoryAdapter;
-    private CollBookBean mCollBook;
+    private FavoriteBookBean mFavoriteBook;
     //控制屏幕常亮
     private PowerManager.WakeLock mWakeLock;
     private Handler mHandler = new Handler() {
@@ -199,10 +199,10 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
 
     private String mBookId;
 
-    public static void startActivity(Context context, CollBookBean collBook, boolean isCollected) {
+    public static void startActivity(Context context, FavoriteBookBean favoriteBook, boolean isCollected) {
         context.startActivity(new Intent(context, ReadActivity.class)
                 .putExtra(EXTRA_IS_COLLECTED, isCollected)
-                .putExtra(EXTRA_COLL_BOOK, collBook));
+                .putExtra(EXTRA_FAVORITE_BOOK, favoriteBook));
     }
 
     @Override
@@ -218,19 +218,19 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
     @Override
     protected void initData(Bundle savedInstanceState) {
         super.initData(savedInstanceState);
-        mCollBook = getIntent().getParcelableExtra(EXTRA_COLL_BOOK);
+        mFavoriteBook = getIntent().getParcelableExtra(EXTRA_FAVORITE_BOOK);
         isCollected = getIntent().getBooleanExtra(EXTRA_IS_COLLECTED, false);
         isNightMode = ReadSettingManager.getInstance().isNightMode();
         isFullScreen = ReadSettingManager.getInstance().isFullScreen();
 
-        mBookId = mCollBook.get_id();
+        mBookId = mFavoriteBook.get_id();
     }
 
     @Override
     protected void setUpToolbar(Toolbar toolbar) {
         super.setUpToolbar(toolbar);
         //设置标题
-        toolbar.setTitle(mCollBook.getTitle());
+        toolbar.setTitle(mFavoriteBook.getTitle());
         //半透明化StatusBar
         SystemBarUtils.transparentStatusBar(this);
     }
@@ -246,7 +246,7 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
         }
 
         //获取页面加载器
-        mPageLoader = mPvPage.getPageLoader(mCollBook);
+        mPageLoader = mPvPage.getPageLoader(mFavoriteBook);
         //禁止滑动展示DrawerLayout
         mDlSlide.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         //侧边打开后，返回键能够起作用
@@ -621,12 +621,12 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                     .compose(RxUtils::toSimpleSingle)
                     .subscribe(
                             (bookChapterBeen, throwable) -> {
-                                // 设置 CollBook
-                                mPageLoader.getCollBook().setBookChapters(bookChapterBeen);
+                                // 设置 FavoriteBook
+                                mPageLoader.getFavoriteBook().setBookChapters(bookChapterBeen);
                                 // 刷新章节列表
                                 mPageLoader.refreshChapterList();
                                 // 如果是网络小说并被标记更新的，则从网络下载目录
-                                if (mCollBook.isUpdate() && !mCollBook.isLocal()) {
+                                if (mFavoriteBook.isUpdate() && !mFavoriteBook.isLocal()) {
                                     mPresenter.loadCategory(mBookId);
                                 }
                                 LogUtils.e(throwable);
@@ -652,11 +652,11 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
 
     @Override
     public void showCategory(List<BookChapterBean> bookChapters) {
-        mPageLoader.getCollBook().setBookChapters(bookChapters);
+        mPageLoader.getFavoriteBook().setBookChapters(bookChapters);
         mPageLoader.refreshChapterList();
 
         // 如果是目录更新的情况，那么就需要存储更新数据
-        if (mCollBook.isUpdate() && isCollected) {
+        if (mFavoriteBook.isUpdate() && isCollected) {
             BookRepository.getInstance()
                     .saveBookChaptersWithAsync(bookChapters);
         }
@@ -694,8 +694,8 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
             return;
         }
 
-        if (!mCollBook.isLocal() && !isCollected
-                && !mCollBook.getBookChapters().isEmpty()) {
+        if (!mFavoriteBook.isLocal() && !isCollected
+                && !mFavoriteBook.getBookChapters().isEmpty()) {
             AlertDialog alertDialog = new AlertDialog.Builder(this)
                     .setTitle("加入书架")
                     .setMessage("喜欢本书就加入书架吧")
@@ -703,11 +703,11 @@ public class ReadActivity extends BaseMVPActivity<ReadContract.Presenter>
                         //设置为已收藏
                         isCollected = true;
                         //设置阅读时间
-                        mCollBook.setLastRead(StringUtils.
+                        mFavoriteBook.setLastRead(StringUtils.
                                 dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
 
                         BookRepository.getInstance()
-                                .saveCollBookWithAsync(mCollBook);
+                                .saveFavoriteBookWithAsync(mFavoriteBook);
 
                         exit();
                     })

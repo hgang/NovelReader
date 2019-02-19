@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.newbiechen.ireader.model.gen.BookChapterBeanDao;
-import com.example.newbiechen.ireader.model.gen.CollBookBeanDao;
+import com.example.newbiechen.ireader.model.gen.FavoriteBookBeanDao;
 import com.example.newbiechen.ireader.utils.MD5Utils;
 
 import org.greenrobot.greendao.AbstractDao;
@@ -41,7 +41,7 @@ public class Update2Helper {
     }
 
     public void update(Database db) {
-        updateCollBook(db);
+        updateFavoriteBook(db);
         updateBookChapter(db);
     }
 
@@ -54,11 +54,11 @@ public class Update2Helper {
         restoreData(db, bookChapterClass);
     }
 
-    private void updateCollBook(Database db) {
-        Class<? extends AbstractDao<?, ?>> collBookClass = CollBookBeanDao.class;
+    private void updateFavoriteBook(Database db) {
+        Class<? extends AbstractDao<?, ?>> favoriteBookClass = FavoriteBookBeanDao.class;
 
         // 遍历查找本地文件，然后修改本地文件的数据
-        DaoConfig daoConfig = new DaoConfig(db, collBookClass);
+        DaoConfig daoConfig = new DaoConfig(db, favoriteBookClass);
         String tableName = daoConfig.tablename;
 
         Cursor cursor = db.rawQuery("select _ID,IS_LOCAL from " + tableName, null);

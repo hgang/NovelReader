@@ -1,7 +1,5 @@
 package com.example.newbiechen.ireader.model.bean;
 
-import com.example.newbiechen.ireader.model.bean.BaseBean;
-
 import java.util.List;
 
 /**
@@ -80,7 +78,7 @@ public class BookDetailBean{
     private List<String> tags;
 
 
-    private CollBookBean collBookBean;
+    private FavoriteBookBean favoriteBookBean;
 
     public String get_id() {
         return _id;
@@ -306,15 +304,15 @@ public class BookDetailBean{
         this.tags = tags;
     }
 
-    public CollBookBean getCollBookBean(){
-        if (collBookBean == null){
-            collBookBean = createCollBookBean();
+    public FavoriteBookBean getFavoriteBookBean(){
+        if (favoriteBookBean == null){
+            favoriteBookBean = createFavoriteBookBean();
         }
-        return collBookBean;
+        return favoriteBookBean;
     }
 
-    public CollBookBean createCollBookBean(){
-        CollBookBean bean = new CollBookBean();
+    public FavoriteBookBean createFavoriteBookBean(){
+        FavoriteBookBean bean = new FavoriteBookBean();
         bean.set_id(get_id());
         bean.setTitle(getTitle());
         bean.setAuthor(getAuthor());

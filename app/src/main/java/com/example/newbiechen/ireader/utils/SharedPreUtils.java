@@ -12,19 +12,18 @@ import com.example.newbiechen.ireader.App;
 public class SharedPreUtils {
     private static final String SHARED_NAME = "IReader_pref";
     private static SharedPreUtils sInstance;
-    private SharedPreferences sharedReadable;
-    private SharedPreferences.Editor sharedWritable;
+    private SharedPreferences mPreferences;
+    private SharedPreferences.Editor mEditor;
 
-    private SharedPreUtils(){
-        sharedReadable = App.getContext()
-                .getSharedPreferences(SHARED_NAME, Context.MODE_MULTI_PROCESS);
-        sharedWritable = sharedReadable.edit();
+    private SharedPreUtils() {
+        mPreferences = App.getContext()
+                .getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE);
     }
 
-    public static SharedPreUtils getInstance(){
-        if(sInstance == null){
-            synchronized (SharedPreUtils.class){
-                if (sInstance == null){
+    public static SharedPreUtils getInstance() {
+        if (sInstance == null) {
+            synchronized (SharedPreUtils.class) {
+                if (sInstance == null) {
                     sInstance = new SharedPreUtils();
                 }
             }
@@ -32,30 +31,41 @@ public class SharedPreUtils {
         return sInstance;
     }
 
-    public String getString(String key){
-        return sharedReadable.getString(key,"");
+    private SharedPreferences.Editor getEditor() {
+        if (mEditor == null) {
+            mEditor = mPreferences.edit();
+        }
+        return mEditor;
     }
 
-    public void putString(String key,String value){
-        sharedWritable.putString(key,value);
-        sharedWritable.commit();
+    public String getString(String key) {
+        return getString(key, "");
     }
 
-    public void putInt(String key,int value){
-        sharedWritable.putInt(key, value);
-        sharedWritable.commit();
+    public String getString(String key, String def) {
+        return mPreferences.getString(key, def);
     }
 
-    public void putBoolean(String key,boolean value){
-        sharedWritable.putBoolean(key, value);
-        sharedWritable.commit();
+    public void putString(String key, String value) {
+        getEditor().putString(key, value);
+        getEditor().apply();
     }
 
-    public int getInt(String key,int def){
-        return sharedReadable.getInt(key, def);
+    public void putInt(String key, int value) {
+        getEditor().putInt(key, value);
+        getEditor().apply();
     }
 
-    public boolean getBoolean(String key,boolean def){
-        return sharedReadable.getBoolean(key, def);
+    public void putBoolean(String key, boolean value) {
+        getEditor().putBoolean(key, value);
+        getEditor().apply();
+    }
+
+    public int getInt(String key, int def) {
+        return mPreferences.getInt(key, def);
+    }
+
+    public boolean getBoolean(String key, boolean def) {
+        return mPreferences.getBoolean(key, def);
     }
 }

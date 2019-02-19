@@ -11,7 +11,6 @@ import com.example.newbiechen.ireader.R;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.Unbinder;
 
 /**
  * Created by newbiechen on 17-4-24.
@@ -20,9 +19,9 @@ import butterknife.Unbinder;
 public abstract class BaseTabActivity extends BaseActivity {
     /**************View***************/
     @BindView(R.id.tab_tl_indicator)
-    protected TabLayout mTlIndicator;
+    protected TabLayout mTabLayout;
     @BindView(R.id.tab_vp)
-    protected ViewPager mVp;
+    protected ViewPager mViewPager;
     /************Params*******************/
     private List<Fragment> mFragmentList;
     private List<String> mTitleList;
@@ -45,9 +44,9 @@ public abstract class BaseTabActivity extends BaseActivity {
         checkParamsIsRight();
 
         TabFragmentPageAdapter adapter = new TabFragmentPageAdapter(getSupportFragmentManager());
-        mVp.setAdapter(adapter);
-        mVp.setOffscreenPageLimit(3);
-        mTlIndicator.setupWithViewPager(mVp);
+        mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(3);
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
     /**

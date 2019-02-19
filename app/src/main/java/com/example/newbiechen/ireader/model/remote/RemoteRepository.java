@@ -3,7 +3,7 @@ package com.example.newbiechen.ireader.model.remote;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
 import com.example.newbiechen.ireader.model.bean.ChapterInfoBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.bean.packages.BillboardPackage;
 import com.example.newbiechen.ireader.model.bean.BillBookBean;
 import com.example.newbiechen.ireader.model.bean.BookHelpsBean;
@@ -20,7 +20,6 @@ import com.example.newbiechen.ireader.model.bean.HelpsDetailBean;
 import com.example.newbiechen.ireader.model.bean.HotCommentBean;
 import com.example.newbiechen.ireader.model.bean.ReviewDetailBean;
 import com.example.newbiechen.ireader.model.bean.SortBookBean;
-import com.example.newbiechen.ireader.model.bean.packages.ChapterInfoPackage;
 import com.example.newbiechen.ireader.model.bean.packages.SearchBookPackage;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class RemoteRepository {
         return sInstance;
     }
 
-    public Single<List<CollBookBean>> getRecommendBooks(String gender){
+    public Single<List<FavoriteBookBean>> getRecommendBooks(String gender){
         return mBookApi.getRecommendBookPackage(gender)
                 .map(bean -> bean.getBooks());
     }

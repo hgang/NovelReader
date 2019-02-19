@@ -1,11 +1,8 @@
 package com.example.newbiechen.ireader.utils;
 
-import android.app.Service;
-import android.app.usage.NetworkStatsManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 
 import com.example.newbiechen.ireader.App;
 
@@ -14,7 +11,6 @@ import com.example.newbiechen.ireader.App;
  */
 
 public class NetworkUtils {
-
 
     /**
      * 获取活动网络信息
@@ -60,7 +56,5 @@ public class NetworkUtils {
         return cm != null && cm.getActiveNetworkInfo() != null
                 && cm.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_WIFI;
     }
-
-
 
 }

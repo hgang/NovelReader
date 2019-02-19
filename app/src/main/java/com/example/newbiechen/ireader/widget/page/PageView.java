@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.widget.animation.CoverPageAnim;
 import com.example.newbiechen.ireader.widget.animation.HorizonPageAnim;
 import com.example.newbiechen.ireader.widget.animation.NonePageAnim;
@@ -339,19 +339,19 @@ public class PageView extends View {
     /**
      * 获取 PageLoader
      *
-     * @param collBook
+     * @param favoriteBook
      * @return
      */
-    public PageLoader getPageLoader(CollBookBean collBook) {
+    public PageLoader getPageLoader(FavoriteBookBean favoriteBook) {
         // 判是否已经存在
         if (mPageLoader != null) {
             return mPageLoader;
         }
         // 根据书籍类型，获取具体的加载器
-        if (collBook.isLocal()) {
-            mPageLoader = new LocalPageLoader(this, collBook);
+        if (favoriteBook.isLocal()) {
+            mPageLoader = new LocalPageLoader(this, favoriteBook);
         } else {
-            mPageLoader = new NetPageLoader(this, collBook);
+            mPageLoader = new NetPageLoader(this, favoriteBook);
         }
         // 判断是否 PageView 已经初始化完成
         if (mViewWidth != 0 || mViewHeight != 0) {

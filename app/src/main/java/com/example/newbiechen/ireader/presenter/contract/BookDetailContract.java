@@ -2,7 +2,7 @@ package com.example.newbiechen.ireader.presenter.contract;
 
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
 import com.example.newbiechen.ireader.model.bean.BookListBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.bean.HotCommentBean;
 import com.example.newbiechen.ireader.ui.base.BaseContract;
 
@@ -26,6 +26,6 @@ public interface BookDetailContract {
     interface Presenter extends BaseContract.BasePresenter<View>{
         void refreshBookDetail(String bookId);
         //添加到书架上
-        void addToBookShelf(CollBookBean collBook);
+        void addToBookShelf(FavoriteBookBean favoriteBookBean);
     }
 }

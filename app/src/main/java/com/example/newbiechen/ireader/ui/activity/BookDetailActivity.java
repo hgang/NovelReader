@@ -18,7 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.newbiechen.ireader.R;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
 import com.example.newbiechen.ireader.model.bean.BookListBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.bean.HotCommentBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.presenter.BookDetailPresenter;
@@ -93,7 +93,7 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
     /************************************/
     private HotCommentAdapter mHotCommentAdapter;
     private BookListAdapter mBookListAdapter;
-    private CollBookBean mCollBookBean;
+    private FavoriteBookBean mFavoriteBookBean;
     private ProgressDialog mProgressDialog;
     /*******************************************/
     private String mBookId;
@@ -155,7 +155,7 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
                     if (isCollected) {
                         //放弃点击
                         BookRepository.getInstance()
-                                .deleteCollBookInRx(mCollBookBean);
+                                .deleteFavoriteBookInRx(mFavoriteBookBean);
 
                         mTvChase.setText(getResources().getString(R.string.nb_book_detail_chase_update));
 
@@ -168,7 +168,7 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
 
                         isCollected = false;
                     } else {
-                        mPresenter.addToBookShelf(mCollBookBean);
+                        mPresenter.addToBookShelf(mFavoriteBookBean);
                         mTvChase.setText(getResources().getString(R.string.nb_book_detail_give_up));
 
                         //修改背景
@@ -186,7 +186,7 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
         mTvRead.setOnClickListener(
                 (v) -> startActivityForResult(new Intent(this, ReadActivity.class)
                         .putExtra(ReadActivity.EXTRA_IS_COLLECTED, isCollected)
-                        .putExtra(ReadActivity.EXTRA_COLL_BOOK, mCollBookBean), REQUEST_READ)
+                        .putExtra(ReadActivity.EXTRA_FAVORITE_BOOK, mFavoriteBookBean), REQUEST_READ)
         );
 
 
@@ -231,10 +231,10 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
         mTvCommunity.setText(getResources().getString(R.string.nb_book_detail_community, bean.getTitle()));
         //帖子数
         mTvPostsCount.setText(getResources().getString(R.string.nb_book_detail_posts_count, bean.getPostCount()));
-        mCollBookBean = BookRepository.getInstance().getCollBook(bean.get_id());
+        mFavoriteBookBean = BookRepository.getInstance().getFavoriteBook(bean.get_id());
 
         //判断是否收藏
-        if (mCollBookBean != null) {
+        if (mFavoriteBookBean != null) {
             isCollected = true;
 
             mTvChase.setText(getResources().getString(R.string.nb_book_detail_give_up));
@@ -246,7 +246,7 @@ public class BookDetailActivity extends BaseMVPActivity<BookDetailContract.Prese
                     null, null);
             mTvRead.setText("继续阅读");
         } else {
-            mCollBookBean = bean.getCollBookBean();
+            mFavoriteBookBean = bean.getFavoriteBookBean();
         }
     }
 

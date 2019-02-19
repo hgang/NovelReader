@@ -78,7 +78,7 @@ public class FileCategoryFragment extends BaseFileFragment {
 
                         //如果是已加载的文件，则点击事件无效。
                         String id = mAdapter.getItem(pos).getAbsolutePath();
-                        if (BookRepository.getInstance().getCollBook(id) != null){
+                        if (BookRepository.getInstance().getFavoriteBook(id) != null){
                             return;
                         }
                         //点击选中

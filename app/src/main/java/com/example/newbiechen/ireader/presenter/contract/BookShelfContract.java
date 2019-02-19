@@ -1,7 +1,6 @@
 package com.example.newbiechen.ireader.presenter.contract;
 
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
-import com.example.newbiechen.ireader.model.bean.DownloadTaskBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.ui.base.BaseContract;
 
 import java.util.List;
@@ -13,15 +12,15 @@ import java.util.List;
 public interface BookShelfContract {
 
     interface View extends BaseContract.BaseView{
-        void finishRefresh(List<CollBookBean> collBookBeans);
+        void finishRefresh(List<FavoriteBookBean> favoriteBookBeans);
         void finishUpdate();
         void showErrorTip(String error);
     }
 
     interface Presenter extends BaseContract.BasePresenter<View>{
-        void refreshCollBooks();
-        void createDownloadTask(CollBookBean collBookBean);
-        void updateCollBooks(List<CollBookBean> collBookBeans);
+        void refreshFavoriteBooks();
+        void createDownloadTask(FavoriteBookBean favoriteBookBean);
+        void updateFavoriteBooks(List<FavoriteBookBean> favoriteBookBeans);
         void loadRecommendBooks(String gender);
     }
 }

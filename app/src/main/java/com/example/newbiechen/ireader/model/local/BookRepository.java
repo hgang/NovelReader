@@ -5,10 +5,10 @@ import android.util.Log;
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookRecordBean;
 import com.example.newbiechen.ireader.model.bean.ChapterInfoBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.gen.BookChapterBeanDao;
 import com.example.newbiechen.ireader.model.gen.BookRecordBeanDao;
-import com.example.newbiechen.ireader.model.gen.CollBookBeanDao;
+import com.example.newbiechen.ireader.model.gen.FavoriteBookBeanDao;
 import com.example.newbiechen.ireader.model.gen.DaoSession;
 import com.example.newbiechen.ireader.model.gen.DownloadTaskBeanDao;
 import com.example.newbiechen.ireader.utils.BookManager;
@@ -33,18 +33,18 @@ import io.reactivex.SingleOnSubscribe;
 
 /**
  * Created by newbiechen on 17-5-8.
- * 存储关于书籍内容的信息(CollBook(收藏书籍),BookChapter(书籍列表),ChapterInfo(书籍章节),BookRecord(记录))
+ * 存储关于书籍内容的信息(FavoriteBook(收藏书籍),BookChapter(书籍列表),ChapterInfo(书籍章节),BookRecord(记录))
  */
 
 public class BookRepository {
-    private static final String TAG = "CollBookManager";
+    private static final String TAG = "FavoriteBookManager";
     private static volatile BookRepository sInstance;
     private DaoSession mSession;
-    private CollBookBeanDao mCollBookDao;
+    private FavoriteBookBeanDao mFavoriteBookDao;
     private BookRepository(){
         mSession = DaoDbHelper.getInstance()
                 .getSession();
-        mCollBookDao = mSession.getCollBookBeanDao();
+        mFavoriteBookDao = mSession.getFavoriteBookBeanDao();
     }
 
     public static BookRepository getInstance(){
@@ -59,7 +59,7 @@ public class BookRepository {
     }
 
     //存储已收藏书籍
-    public void saveCollBookWithAsync(CollBookBean bean){
+    public void saveFavoriteBookWithAsync(FavoriteBookBean bean){
         //启动异步存储
         mSession.startAsyncSession()
                 .runInTx(
@@ -69,8 +69,8 @@ public class BookRepository {
                                 mSession.getBookChapterBeanDao()
                                         .insertOrReplaceInTx(bean.getBookChapters());
                             }
-                            //存储CollBook (确保先后顺序，否则出错)
-                            mCollBookDao.insertOrReplace(bean);
+                            //存储FavoriteBook (确保先后顺序，否则出错)
+                            mFavoriteBookDao.insertOrReplace(bean);
                         }
                 );
     }
@@ -79,29 +79,29 @@ public class BookRepository {
      * 同时保存BookChapter
      * @param beans
      */
-    public void saveCollBooksWithAsync(List<CollBookBean> beans){
+    public void saveFavoriteBooksWithAsync(List<FavoriteBookBean> beans){
         mSession.startAsyncSession()
                 .runInTx(
                         () -> {
-                            for (CollBookBean bean : beans){
+                            for (FavoriteBookBean bean : beans){
                                 if (bean.getBookChapters() != null){
                                     //存储BookChapterBean(需要修改，如果存在id相同的则无视)
                                     mSession.getBookChapterBeanDao()
                                             .insertOrReplaceInTx(bean.getBookChapters());
                                 }
                             }
-                            //存储CollBook (确保先后顺序，否则出错)
-                            mCollBookDao.insertOrReplaceInTx(beans);
+                            //存储FavoriteBook (确保先后顺序，否则出错)
+                            mFavoriteBookDao.insertOrReplaceInTx(beans);
                         }
                 );
     }
 
-    public void saveCollBook(CollBookBean bean){
-        mCollBookDao.insertOrReplace(bean);
+    public void saveFavoriteBook(FavoriteBookBean bean){
+        mFavoriteBookDao.insertOrReplace(bean);
     }
 
-    public void saveCollBooks(List<CollBookBean> beans){
-        mCollBookDao.insertOrReplaceInTx(beans);
+    public void saveFavoriteBooks(List<FavoriteBookBean> beans){
+        mFavoriteBookDao.insertOrReplaceInTx(beans);
     }
 
     /**
@@ -146,18 +146,18 @@ public class BookRepository {
     }
 
     /*****************************get************************************************/
-    public CollBookBean getCollBook(String bookId){
-        CollBookBean bean = mCollBookDao.queryBuilder()
-                .where(CollBookBeanDao.Properties._id.eq(bookId))
+    public FavoriteBookBean getFavoriteBook(String bookId){
+        FavoriteBookBean bean = mFavoriteBookDao.queryBuilder()
+                .where(FavoriteBookBeanDao.Properties._id.eq(bookId))
                 .unique();
         return bean;
     }
 
 
-    public  List<CollBookBean> getCollBooks(){
-        return mCollBookDao
+    public  List<FavoriteBookBean> getFavoriteBooks(){
+        return mFavoriteBookDao
                 .queryBuilder()
-                .orderDesc(CollBookBeanDao.Properties.LastRead)
+                .orderDesc(FavoriteBookBeanDao.Properties.LastRead)
                 .list();
     }
 
@@ -217,7 +217,7 @@ public class BookRepository {
     /************************************************************/
 
     /************************************************************/
-    public Single<Void> deleteCollBookInRx(CollBookBean bean) {
+    public Single<Void> deleteFavoriteBookInRx(FavoriteBookBean bean) {
         return Single.create(new SingleOnSubscribe<Void>() {
             @Override
             public void subscribe(SingleEmitter<Void> e) throws Exception {
@@ -227,8 +227,8 @@ public class BookRepository {
                 deleteDownloadTask(bean.get_id());
                 //删除目录
                 deleteBookChapter(bean.get_id());
-                //删除CollBook
-                mCollBookDao.delete(bean);
+                //删除FavoriteBook
+                mFavoriteBookDao.delete(bean);
                 e.onSuccess(new Void());
             }
         });
@@ -243,8 +243,8 @@ public class BookRepository {
                 .executeDeleteWithoutDetachingEntities();
     }
 
-    public void deleteCollBook(CollBookBean collBook){
-        mCollBookDao.delete(collBook);
+    public void deleteFavoriteBook(FavoriteBookBean favoriteBook){
+        mFavoriteBookDao.delete(favoriteBook);
     }
 
     //删除书籍

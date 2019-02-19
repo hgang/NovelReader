@@ -1,15 +1,15 @@
 package com.example.newbiechen.ireader.event;
 
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 
 /**
  * Created by newbiechen on 17-5-27.
  */
 
 public class DeleteTaskEvent {
-    public CollBookBean collBook;
+    public FavoriteBookBean favoriteBook;
 
-    public DeleteTaskEvent(CollBookBean collBook){
-        this.collBook = collBook;
+    public DeleteTaskEvent(FavoriteBookBean favoriteBook){
+        this.favoriteBook = favoriteBook;
     }
 }

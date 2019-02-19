@@ -1,10 +1,8 @@
 package com.example.newbiechen.ireader.presenter;
 
-import android.util.Log;
-
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
 import com.example.newbiechen.ireader.model.bean.BookDetailBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.model.remote.RemoteRepository;
 import com.example.newbiechen.ireader.presenter.contract.BookDetailContract;
@@ -36,9 +34,9 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
     }
 
     @Override
-    public void addToBookShelf(CollBookBean collBookBean)  {
+    public void addToBookShelf(FavoriteBookBean favoriteBookBean)  {
         Disposable disposable = RemoteRepository.getInstance()
-                .getBookChapters(collBookBean.get_id())
+                .getBookChapters(favoriteBookBean.get_id())
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(
                         (d) -> mView.waitToBookShelf() //等待加载
@@ -54,10 +52,10 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContract.View>
                             }
 
                             //设置目录
-                            collBookBean.setBookChapters(beans);
+                            favoriteBookBean.setBookChapters(beans);
                             //存储收藏
                             BookRepository.getInstance()
-                                    .saveCollBookWithAsync(collBookBean);
+                                    .saveFavoriteBookWithAsync(favoriteBookBean);
 
                             mView.succeedToBookShelf();
                         }

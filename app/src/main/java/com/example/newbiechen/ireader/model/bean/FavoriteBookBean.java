@@ -1,34 +1,28 @@
 package com.example.newbiechen.ireader.model.bean;
 
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.example.newbiechen.ireader.App;
+import com.example.newbiechen.ireader.model.gen.BookChapterBeanDao;
+import com.example.newbiechen.ireader.model.gen.FavoriteBookBeanDao;
+import com.example.newbiechen.ireader.model.gen.DaoSession;
 import com.example.newbiechen.ireader.utils.StringUtils;
-import com.google.gson.annotations.SerializedName;
 
+import org.greenrobot.greendao.DaoException;
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.annotation.OrderBy;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.ToMany;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import org.greenrobot.greendao.DaoException;
-import com.example.newbiechen.ireader.model.gen.DaoSession;
-import com.example.newbiechen.ireader.model.gen.BookChapterBeanDao;
-import com.example.newbiechen.ireader.model.gen.CollBookBeanDao;
 
 /**
  * Created by newbiechen on 17-5-8.
  * 收藏的书籍
  */
 @Entity
-public class CollBookBean implements Parcelable{
+public class FavoriteBookBean implements Parcelable{
 
     public static final int STATUS_UNCACHE = 0; //未缓存
     public static final int STATUS_CACHING = 1; //正在缓存
@@ -73,13 +67,13 @@ public class CollBookBean implements Parcelable{
     @Generated(hash = 2040040024)
     private transient DaoSession daoSession;
     /** Used for active entity operations. */
-    @Generated(hash = 1552163441)
-    private transient CollBookBeanDao myDao;
+    @Generated(hash = 1703481903)
+    private transient FavoriteBookBeanDao myDao;
 
-    @Generated(hash = 757968961)
-    public CollBookBean(String _id, String title, String author, String shortIntro, String cover,
-            boolean hasCp, int latelyFollower, double retentionRatio, String updated, String lastRead,
-            int chaptersCount, String lastChapter, boolean isUpdate, boolean isLocal) {
+    @Generated(hash = 446991228)
+    public FavoriteBookBean(String _id, String title, String author, String shortIntro, String cover, boolean hasCp,
+            int latelyFollower, double retentionRatio, String updated, String lastRead, int chaptersCount,
+            String lastChapter, boolean isUpdate, boolean isLocal) {
         this._id = _id;
         this.title = title;
         this.author = author;
@@ -96,7 +90,7 @@ public class CollBookBean implements Parcelable{
         this.isLocal = isLocal;
     }
 
-    public CollBookBean() {
+    public FavoriteBookBean() {
     }
 
     public String get_id() {
@@ -243,7 +237,7 @@ public class CollBookBean implements Parcelable{
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 711740787)
+    @Generated(hash = 949159634)
     public List<BookChapterBean> getBookChapterList() {
         if (bookChapterList == null) {
             final DaoSession daoSession = this.daoSession;
@@ -251,8 +245,7 @@ public class CollBookBean implements Parcelable{
                 throw new DaoException("Entity is detached from DAO context");
             }
             BookChapterBeanDao targetDao = daoSession.getBookChapterBeanDao();
-            List<BookChapterBean> bookChapterListNew = targetDao
-                    ._queryCollBookBean_BookChapterList(_id);
+            List<BookChapterBean> bookChapterListNew = targetDao._queryFavoriteBookBean_BookChapterList(_id);
             synchronized (this) {
                 if (bookChapterList == null) {
                     bookChapterList = bookChapterListNew;
@@ -262,13 +255,11 @@ public class CollBookBean implements Parcelable{
         return bookChapterList;
     }
 
-
     /** Resets a to-many relationship, making the next get call to query for a fresh result. */
     @Generated(hash = 1077762221)
     public synchronized void resetBookChapterList() {
         bookChapterList = null;
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#delete(Object)}.
@@ -281,7 +272,6 @@ public class CollBookBean implements Parcelable{
         }
         myDao.delete(this);
     }
-
 
     /**
      * Convenient call for {@link org.greenrobot.greendao.AbstractDao#refresh(Object)}.
@@ -310,10 +300,10 @@ public class CollBookBean implements Parcelable{
 
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 159260324)
+    @Generated(hash = 253796255)
     public void __setDaoSession(DaoSession daoSession) {
         this.daoSession = daoSession;
-        myDao = daoSession != null ? daoSession.getCollBookBeanDao() : null;
+        myDao = daoSession != null ? daoSession.getFavoriteBookBeanDao() : null;
     }
 
     public boolean getIsLocal() {
@@ -347,7 +337,7 @@ public class CollBookBean implements Parcelable{
         dest.writeByte(this.isLocal ? (byte) 1 : (byte) 0);
     }
 
-    protected CollBookBean(Parcel in) {
+    protected FavoriteBookBean(Parcel in) {
         this._id = in.readString();
         this.title = in.readString();
         this.author = in.readString();
@@ -364,15 +354,15 @@ public class CollBookBean implements Parcelable{
         this.isLocal = in.readByte() != 0;
     }
 
-    public static final Creator<CollBookBean> CREATOR = new Creator<CollBookBean>() {
+    public static final Creator<FavoriteBookBean> CREATOR = new Creator<FavoriteBookBean>() {
         @Override
-        public CollBookBean createFromParcel(Parcel source) {
-            return new CollBookBean(source);
+        public FavoriteBookBean createFromParcel(Parcel source) {
+            return new FavoriteBookBean(source);
         }
 
         @Override
-        public CollBookBean[] newArray(int size) {
-            return new CollBookBean[size];
+        public FavoriteBookBean[] newArray(int size) {
+            return new FavoriteBookBean[size];
         }
     };
 }

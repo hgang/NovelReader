@@ -7,8 +7,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.newbiechen.ireader.R;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
-import com.example.newbiechen.ireader.model.local.BookRepository;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.ui.base.adapter.ViewHolderImpl;
 import com.example.newbiechen.ireader.utils.Constant;
 import com.example.newbiechen.ireader.utils.StringUtils;
@@ -18,9 +17,9 @@ import com.example.newbiechen.ireader.utils.StringUtils;
  * CollectionBookView
  */
 
-public class CollBookHolder extends ViewHolderImpl<CollBookBean>{
+public class FavoriteBookHolder extends ViewHolderImpl<FavoriteBookBean>{
 
-    private static final String TAG = "CollBookView";
+    private static final String TAG = "FavoriteBookView";
     private ImageView mIvCover;
     private TextView mTvName;
     private TextView mTvChapter;
@@ -32,17 +31,17 @@ public class CollBookHolder extends ViewHolderImpl<CollBookBean>{
 
     @Override
     public void initView() {
-        mIvCover = findById(R.id.coll_book_iv_cover);
-        mTvName = findById(R.id.coll_book_tv_name);
-        mTvChapter = findById(R.id.coll_book_tv_chapter);
-        mTvTime = findById(R.id.coll_book_tv_lately_update);
-        mCbSelected = findById(R.id.coll_book_cb_selected);
-        mIvRedDot = findById(R.id.coll_book_iv_red_rot);
-        mIvTop = findById(R.id.coll_book_iv_top);
+        mIvCover = findById(R.id.favorite_book_iv_cover);
+        mTvName = findById(R.id.favorite_book_tv_name);
+        mTvChapter = findById(R.id.favorite_book_tv_chapter);
+        mTvTime = findById(R.id.favorite_book_tv_lately_update);
+        mCbSelected = findById(R.id.favorite_book_cb_selected);
+        mIvRedDot = findById(R.id.favorite_book_iv_red_rot);
+        mIvTop = findById(R.id.favorite_book_iv_top);
     }
 
     @Override
-    public void onBind(CollBookBean value, int pos) {
+    public void onBind(FavoriteBookBean value, int pos) {
         if (value.isLocal()){
             //本地文件的图片
             Glide.with(getContext())
@@ -84,6 +83,6 @@ public class CollBookHolder extends ViewHolderImpl<CollBookBean>{
 
     @Override
     protected int getItemLayoutId() {
-        return R.layout.item_coll_book;
+        return R.layout.item_favorite_book;
     }
 }

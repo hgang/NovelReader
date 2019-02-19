@@ -1,8 +1,6 @@
 package com.example.newbiechen.ireader.ui.base;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
@@ -10,11 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 
-import com.example.newbiechen.ireader.BuildConfig;
 import com.example.newbiechen.ireader.R;
 import com.example.newbiechen.ireader.utils.StatusBarCompat;
 

@@ -1,7 +1,7 @@
 package com.example.newbiechen.ireader.model.bean.packages;
 
 import com.example.newbiechen.ireader.model.bean.BaseBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 
 import java.util.List;
 
@@ -11,13 +11,13 @@ import java.util.List;
 
 public class RecommendBookPackage extends BaseBean {
 
-    private List<CollBookBean> books;
+    private List<FavoriteBookBean> books;
 
-    public List<CollBookBean> getBooks() {
+    public List<FavoriteBookBean> getBooks() {
         return books;
     }
 
-    public void setBooks(List<CollBookBean> books) {
+    public void setBooks(List<FavoriteBookBean> books) {
         this.books = books;
     }
 }

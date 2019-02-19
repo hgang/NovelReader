@@ -1,6 +1,6 @@
 package com.example.newbiechen.ireader.event;
 
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 
 /**
  * Created by newbiechen on 17-5-27.
@@ -8,9 +8,9 @@ import com.example.newbiechen.ireader.model.bean.CollBookBean;
 
 public class DeleteResponseEvent {
     public boolean isDelete;
-    public CollBookBean collBook;
-    public DeleteResponseEvent(boolean isDelete,CollBookBean collBook){
+    public FavoriteBookBean favoriteBook;
+    public DeleteResponseEvent(boolean isDelete,FavoriteBookBean favoriteBook){
         this.isDelete = isDelete;
-        this.collBook = collBook;
+        this.favoriteBook = favoriteBook;
     }
 }

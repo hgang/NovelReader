@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 
 import com.example.newbiechen.ireader.R;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.ui.base.BaseTabActivity;
 import com.example.newbiechen.ireader.ui.fragment.BaseFileFragment;
@@ -99,7 +99,7 @@ public class FileSystemActivity extends BaseTabActivity {
                 }
         );
 
-        mVp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -127,10 +127,10 @@ public class FileSystemActivity extends BaseTabActivity {
                 (v) -> {
                     //获取选中的文件
                     List<File> files = mCurFragment.getCheckedFiles();
-                    //转换成CollBook,并存储
-                    List<CollBookBean> collBooks = convertCollBook(files);
+                    //转换成FavoriteBook,并存储
+                    List<FavoriteBookBean> favoriteBooks = convertFavoriteBook(files);
                     BookRepository.getInstance()
-                            .saveCollBooks(collBooks);
+                            .saveFavoriteBooks(favoriteBooks);
                     //设置HashMap为false
                     mCurFragment.setCheckedAll(false);
                     //改变菜单状态
@@ -138,7 +138,7 @@ public class FileSystemActivity extends BaseTabActivity {
                     //改变是否可以全选
                     changeCheckedAllStatus();
                     //提示加入书架成功
-                    ToastUtils.show(getResources().getString(R.string.nb_file_add_succeed,collBooks.size()));
+                    ToastUtils.show(getResources().getString(R.string.nb_file_add_succeed,favoriteBooks.size()));
 
                 }
         );
@@ -174,30 +174,30 @@ public class FileSystemActivity extends BaseTabActivity {
     }
 
     /**
-     * 将文件转换成CollBook
+     * 将文件转换成FavoriteBook
      * @param files:需要加载的文件列表
      * @return
      */
-    private List<CollBookBean> convertCollBook(List<File> files){
-        List<CollBookBean> collBooks = new ArrayList<>(files.size());
+    private List<FavoriteBookBean> convertFavoriteBook(List<File> files){
+        List<FavoriteBookBean> favoriteBooks = new ArrayList<>(files.size());
         for(File file : files){
             //判断文件是否存在
             if (!file.exists()) continue;
 
-            CollBookBean collBook = new CollBookBean();
-            collBook.set_id(MD5Utils.strToMd5By16(file.getAbsolutePath()));
-            collBook.setTitle(file.getName().replace(".txt",""));
-            collBook.setAuthor("");
-            collBook.setShortIntro("无");
-            collBook.setCover(file.getAbsolutePath());
-            collBook.setLocal(true);
-            collBook.setLastChapter("开始阅读");
-            collBook.setUpdated(StringUtils.dateConvert(file.lastModified(), Constant.FORMAT_BOOK_DATE));
-            collBook.setLastRead(StringUtils.
+            FavoriteBookBean favoriteBook = new FavoriteBookBean();
+            favoriteBook.set_id(MD5Utils.strToMd5By16(file.getAbsolutePath()));
+            favoriteBook.setTitle(file.getName().replace(".txt",""));
+            favoriteBook.setAuthor("");
+            favoriteBook.setShortIntro("无");
+            favoriteBook.setCover(file.getAbsolutePath());
+            favoriteBook.setLocal(true);
+            favoriteBook.setLastChapter("开始阅读");
+            favoriteBook.setUpdated(StringUtils.dateConvert(file.lastModified(), Constant.FORMAT_BOOK_DATE));
+            favoriteBook.setLastRead(StringUtils.
                     dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
-            collBooks.add(collBook);
+            favoriteBooks.add(favoriteBook);
         }
-        return collBooks;
+        return favoriteBooks;
     }
 
     /**

@@ -2,7 +2,7 @@ package com.example.newbiechen.ireader.widget.page;
 
 
 import com.example.newbiechen.ireader.model.bean.BookChapterBean;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.utils.BookManager;
 import com.example.newbiechen.ireader.utils.Constant;
@@ -11,7 +11,6 @@ import com.example.newbiechen.ireader.utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -25,8 +24,8 @@ import java.util.List;
 public class NetPageLoader extends PageLoader {
     private static final String TAG = "PageFactory";
 
-    public NetPageLoader(PageView pageView, CollBookBean collBook) {
-        super(pageView, collBook);
+    public NetPageLoader(PageView pageView, FavoriteBookBean favoriteBook) {
+        super(pageView, favoriteBook);
     }
 
     private List<TxtChapter> convertTxtChapter(List<BookChapterBean> bookChapters) {
@@ -43,10 +42,10 @@ public class NetPageLoader extends PageLoader {
 
     @Override
     public void refreshChapterList() {
-        if (mCollBook.getBookChapters() == null) return;
+        if (mFavoriteBook.getBookChapters() == null) return;
 
         // 将 BookChapter 转换成当前可用的 Chapter
-        mChapterList = convertTxtChapter(mCollBook.getBookChapters());
+        mChapterList = convertTxtChapter(mFavoriteBook.getBookChapters());
         isChapterListPrepare = true;
 
         // 目录加载完成，执行回调操作。
@@ -63,7 +62,7 @@ public class NetPageLoader extends PageLoader {
 
     @Override
     protected BufferedReader getChapterReader(TxtChapter chapter) throws Exception {
-        File file = new File(Constant.BOOK_CACHE_PATH + mCollBook.get_id()
+        File file = new File(Constant.BOOK_CACHE_PATH + mFavoriteBook.get_id()
                 + File.separator + chapter.title + FileUtils.SUFFIX_NB);
         if (!file.exists()) return null;
 
@@ -74,7 +73,7 @@ public class NetPageLoader extends PageLoader {
 
     @Override
     protected boolean hasChapterData(TxtChapter chapter) {
-        return BookManager.isChapterCached(mCollBook.get_id(), chapter.title);
+        return BookManager.isChapterCached(mFavoriteBook.get_id(), chapter.title);
     }
 
     // 装载上一章节的内容
@@ -211,14 +210,14 @@ public class NetPageLoader extends PageLoader {
     @Override
     public void saveRecord() {
         super.saveRecord();
-        if (mCollBook != null && isChapterListPrepare) {
-            //表示当前CollBook已经阅读
-            mCollBook.setIsUpdate(false);
-            mCollBook.setLastRead(StringUtils.
+        if (mFavoriteBook != null && isChapterListPrepare) {
+            //表示当前FavoriteBook已经阅读
+            mFavoriteBook.setIsUpdate(false);
+            mFavoriteBook.setLastRead(StringUtils.
                     dateConvert(System.currentTimeMillis(), Constant.FORMAT_BOOK_DATE));
             //直接更新
             BookRepository.getInstance()
-                    .saveCollBook(mCollBook);
+                    .saveFavoriteBook(mFavoriteBook);
         }
     }
 }

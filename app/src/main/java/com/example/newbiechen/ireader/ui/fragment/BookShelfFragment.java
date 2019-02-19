@@ -17,12 +17,12 @@ import com.example.newbiechen.ireader.event.DeleteResponseEvent;
 import com.example.newbiechen.ireader.event.DeleteTaskEvent;
 import com.example.newbiechen.ireader.event.DownloadMessage;
 import com.example.newbiechen.ireader.event.RecommendBookEvent;
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
+import com.example.newbiechen.ireader.model.bean.FavoriteBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.presenter.BookShelfPresenter;
 import com.example.newbiechen.ireader.presenter.contract.BookShelfContract;
 import com.example.newbiechen.ireader.ui.activity.ReadActivity;
-import com.example.newbiechen.ireader.ui.adapter.CollBookAdapter;
+import com.example.newbiechen.ireader.ui.adapter.FavoriteBookAdapter;
 import com.example.newbiechen.ireader.ui.base.BaseMVPFragment;
 import com.example.newbiechen.ireader.utils.RxUtils;
 import com.example.newbiechen.ireader.utils.ToastUtils;
@@ -48,7 +48,7 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
     ScrollRefreshRecyclerView mRvContent;
 
     /************************************/
-    private CollBookAdapter mCollBookAdapter;
+    private FavoriteBookAdapter mFavoriteBookAdapter;
     private FooterItemView mFooterItem;
 
     //是否是第一次进入
@@ -72,10 +72,10 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
 
     private void setUpAdapter() {
         //添加Footer
-        mCollBookAdapter = new CollBookAdapter();
+        mFavoriteBookAdapter = new FavoriteBookAdapter();
         mRvContent.setLayoutManager(new LinearLayoutManager(getContext()));
         mRvContent.addItemDecoration(new DividerItemDecoration(getContext()));
-        mRvContent.setAdapter(mCollBookAdapter);
+        mRvContent.setAdapter(mFavoriteBookAdapter);
     }
 
     @Override
@@ -113,11 +113,11 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                                 ProgressDialog progressDialog = new ProgressDialog(getContext());
                                 progressDialog.setMessage("正在删除中");
                                 progressDialog.show();
-                                BookRepository.getInstance().deleteCollBookInRx(event.collBook)
+                                BookRepository.getInstance().deleteFavoriteBookInRx(event.favoriteBook)
                                         .compose(RxUtils::toSimpleSingle)
                                         .subscribe(
                                                 (Void) -> {
-                                                    mCollBookAdapter.removeItem(event.collBook);
+                                                    mFavoriteBookAdapter.removeItem(event.favoriteBook);
                                                     progressDialog.dismiss();
                                                 }
                                         );
@@ -136,21 +136,21 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
         addDisposable(deleteDisp);
 
         mRvContent.setOnRefreshListener(
-                () -> mPresenter.updateCollBooks(mCollBookAdapter.getItems())
+                () -> mPresenter.updateFavoriteBooks(mFavoriteBookAdapter.getItems())
         );
 
-        mCollBookAdapter.setOnItemClickListener(
+        mFavoriteBookAdapter.setOnItemClickListener(
                 (view, pos) -> {
                     //如果是本地文件，首先判断这个文件是否存在
-                    CollBookBean collBook = mCollBookAdapter.getItem(pos);
-                    if (collBook.isLocal()) {
+                    FavoriteBookBean favoriteBook = mFavoriteBookAdapter.getItem(pos);
+                    if (favoriteBook.isLocal()) {
                         //id表示本地文件的路径
-                        String path = collBook.getCover();
+                        String path = favoriteBook.getCover();
                         File file = new File(path);
                         //判断这个本地文件是否存在
                         if (file.exists() && file.length() != 0) {
                             ReadActivity.startActivity(getContext(),
-                                    mCollBookAdapter.getItem(pos), true);
+                                    mFavoriteBookAdapter.getItem(pos), true);
                         } else {
                             String tip = getContext().getString(R.string.nb_bookshelf_book_not_exist);
                             //提示(从目录中移除这个文件)
@@ -161,7 +161,7 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                                             new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    deleteBook(collBook);
+                                                    deleteBook(favoriteBook);
                                                 }
                                             })
                                     .setNegativeButton(getResources().getString(R.string.nb_common_cancel), null)
@@ -169,15 +169,15 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                         }
                     } else {
                         ReadActivity.startActivity(getContext(),
-                                mCollBookAdapter.getItem(pos), true);
+                                mFavoriteBookAdapter.getItem(pos), true);
                     }
                 }
         );
 
-        mCollBookAdapter.setOnItemLongClickListener(
+        mFavoriteBookAdapter.setOnItemLongClickListener(
                 (v, pos) -> {
                     //开启Dialog,最方便的Dialog,就是AlterDialog
-                    openItemDialog(mCollBookAdapter.getItem(pos));
+                    openItemDialog(mFavoriteBookAdapter.getItem(pos));
                     return true;
                 }
         );
@@ -189,26 +189,26 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
         mRvContent.startRefresh();
     }
 
-    private void openItemDialog(CollBookBean collBook) {
+    private void openItemDialog(FavoriteBookBean favoriteBook) {
         String[] menus;
-        if (collBook.isLocal()) {
+        if (favoriteBook.isLocal()) {
             menus = getResources().getStringArray(R.array.nb_menu_local_book);
         } else {
             menus = getResources().getStringArray(R.array.nb_menu_net_book);
         }
-        AlertDialog collBookDialog = new AlertDialog.Builder(getContext())
-                .setTitle(collBook.getTitle())
+        AlertDialog favoriteBookDialog = new AlertDialog.Builder(getContext())
+                .setTitle(favoriteBook.getTitle())
                 .setAdapter(new ArrayAdapter<String>(getContext(),
                                 android.R.layout.simple_list_item_1, menus),
-                        (dialog, which) -> onItemMenuClick(menus[which], collBook))
+                        (dialog, which) -> onItemMenuClick(menus[which], favoriteBook))
                 .setNegativeButton(null, null)
                 .setPositiveButton(null, null)
                 .create();
 
-        collBookDialog.show();
+        favoriteBookDialog.show();
     }
 
-    private void onItemMenuClick(String which, CollBookBean collBook) {
+    private void onItemMenuClick(String which, FavoriteBookBean favoriteBook) {
         switch (which) {
             //置顶
             case "置顶":
@@ -218,11 +218,11 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                 //2. 进行判断，如果CollBean中状态为未更新。那么就创建Task，加入到Service中去。
                 //3. 如果状态为finish，并且isUpdate为true，那么就根据chapter创建状态
                 //4. 如果状态为finish，并且isUpdate为false。
-                downloadBook(collBook);
+                downloadBook(favoriteBook);
                 break;
             //删除
             case "删除":
-                deleteBook(collBook);
+                deleteBook(favoriteBook);
                 break;
             //批量管理
             case "批量管理":
@@ -232,18 +232,18 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
         }
     }
 
-    private void downloadBook(CollBookBean collBook) {
+    private void downloadBook(FavoriteBookBean favoriteBook) {
         //创建任务
-        mPresenter.createDownloadTask(collBook);
+        mPresenter.createDownloadTask(favoriteBook);
     }
 
     /**
      * 默认删除本地文件
      *
-     * @param collBook
+     * @param favoriteBook
      */
-    private void deleteBook(CollBookBean collBook) {
-        if (collBook.isLocal()) {
+    private void deleteBook(FavoriteBookBean favoriteBook) {
+        if (favoriteBook.isLocal()) {
             View view = LayoutInflater.from(getContext())
                     .inflate(R.layout.dialog_delete, null);
             CheckBox cb = (CheckBox) view.findViewById(R.id.delete_cb_select);
@@ -259,26 +259,26 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
                                 progressDialog.setMessage("正在删除中");
                                 progressDialog.show();
                                 //删除
-                                File file = new File(collBook.getCover());
+                                File file = new File(favoriteBook.getCover());
                                 if (file.exists()) file.delete();
-                                BookRepository.getInstance().deleteCollBook(collBook);
-                                BookRepository.getInstance().deleteBookRecord(collBook.get_id());
+                                BookRepository.getInstance().deleteFavoriteBook(favoriteBook);
+                                BookRepository.getInstance().deleteBookRecord(favoriteBook.get_id());
 
                                 //从Adapter中删除
-                                mCollBookAdapter.removeItem(collBook);
+                                mFavoriteBookAdapter.removeItem(favoriteBook);
                                 progressDialog.dismiss();
                             } else {
-                                BookRepository.getInstance().deleteCollBook(collBook);
-                                BookRepository.getInstance().deleteBookRecord(collBook.get_id());
+                                BookRepository.getInstance().deleteFavoriteBook(favoriteBook);
+                                BookRepository.getInstance().deleteBookRecord(favoriteBook.get_id());
                                 //从Adapter中删除
-                                mCollBookAdapter.removeItem(collBook);
+                                mFavoriteBookAdapter.removeItem(favoriteBook);
                             }
                         }
                     })
                     .setNegativeButton(getResources().getString(R.string.nb_common_cancel), null)
                     .show();
         } else {
-            RxBus.getInstance().post(new DeleteTaskEvent(collBook));
+            RxBus.getInstance().post(new DeleteTaskEvent(favoriteBook));
         }
     }
 
@@ -291,9 +291,9 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
 
     @Override
     public void complete() {
-        if (mCollBookAdapter.getItemCount() > 0 && mFooterItem == null) {
+        if (mFavoriteBookAdapter.getItemCount() > 0 && mFooterItem == null) {
             mFooterItem = new FooterItemView();
-            mCollBookAdapter.addFooterView(mFooterItem);
+            mFavoriteBookAdapter.addFooterView(mFooterItem);
         }
 
         if (mRvContent.isRefreshing()) {
@@ -302,13 +302,13 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
     }
 
     @Override
-    public void finishRefresh(List<CollBookBean> collBookBeans) {
-        mCollBookAdapter.refreshItems(collBookBeans);
+    public void finishRefresh(List<FavoriteBookBean> favoriteBookBeans) {
+        mFavoriteBookAdapter.refreshItems(favoriteBookBeans);
         //如果是初次进入，则更新书籍信息
         if (isInit) {
             isInit = false;
             mRvContent.post(
-                    () -> mPresenter.updateCollBooks(mCollBookAdapter.getItems())
+                    () -> mPresenter.updateFavoriteBooks(mFavoriteBookAdapter.getItems())
             );
         }
     }
@@ -316,8 +316,8 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
     @Override
     public void finishUpdate() {
         //重新从数据库中获取数据
-        mCollBookAdapter.refreshItems(BookRepository
-                .getInstance().getCollBooks());
+        mFavoriteBookAdapter.refreshItems(BookRepository
+                .getInstance().getFavoriteBooks());
     }
 
     @Override
@@ -348,6 +348,6 @@ public class BookShelfFragment extends BaseMVPFragment<BookShelfContract.Present
     @Override
     public void onResume() {
         super.onResume();
-        mPresenter.refreshCollBooks();
+        mPresenter.refreshFavoriteBooks();
     }
 }

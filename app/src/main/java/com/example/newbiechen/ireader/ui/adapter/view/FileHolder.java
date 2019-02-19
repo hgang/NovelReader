@@ -63,7 +63,7 @@ public class FileHolder extends ViewHolderImpl<File> {
         //选择
         String id = MD5Utils.strToMd5By16(file.getAbsolutePath());
 
-        if (BookRepository.getInstance().getCollBook(id) != null){
+        if (BookRepository.getInstance().getFavoriteBook(id) != null){
             mIvIcon.setImageResource(R.drawable.ic_file_loaded);
             mIvIcon.setVisibility(View.VISIBLE);
             mCbSelect.setVisibility(View.GONE);

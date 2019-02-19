@@ -1,6 +1,5 @@
 package com.example.newbiechen.ireader.ui.adapter;
 
-import com.example.newbiechen.ireader.model.bean.CollBookBean;
 import com.example.newbiechen.ireader.model.local.BookRepository;
 import com.example.newbiechen.ireader.ui.adapter.view.FileHolder;
 import com.example.newbiechen.ireader.ui.base.adapter.BaseListAdapter;
@@ -109,7 +108,7 @@ public class FileSystemAdapter extends BaseListAdapter<File>{
 
     private boolean isFileLoaded(String id){
         //如果是已加载的文件，则点击事件无效。
-        if (BookRepository.getInstance().getCollBook(id) != null){
+        if (BookRepository.getInstance().getFavoriteBook(id) != null){
             return true;
         }
         return false;

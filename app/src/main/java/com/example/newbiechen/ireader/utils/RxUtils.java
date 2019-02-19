@@ -1,5 +1,7 @@
 package com.example.newbiechen.ireader.utils;
 
+import android.support.v4.util.Pair;
+
 import com.example.newbiechen.ireader.R;
 import com.example.newbiechen.ireader.event.RecommendBookEvent;
 import com.example.newbiechen.ireader.model.bean.CommentBean;
@@ -32,30 +34,14 @@ public class RxUtils {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static <T,R> TwoTuple<T,R> twoTuple(T first,R second){
-        return new TwoTuple<T, R>(first, second);
+    public static <T,R> Pair<T,R> createPair(T first, R second){
+        return new Pair<>(first, second);
     }
 
     public static <T> Single<DetailBean<T>> toCommentDetail(Single<T> detailSingle,
                                                 Single<List<CommentBean>> bestCommentsSingle,
                                                 Single<List<CommentBean>> commentsSingle){
         return Single.zip(detailSingle, bestCommentsSingle, commentsSingle,
-                new Function3<T, List<CommentBean>, List<CommentBean>, DetailBean<T>>() {
-                    @Override
-                    public DetailBean<T> apply(T t, List<CommentBean> commentBeen,
-                                               List<CommentBean> commentBeen2) throws Exception {
-                        return new DetailBean<T>(t,commentBeen,commentBeen2);
-                    }
-                });
-    }
-
-    public static class TwoTuple<A, B> {
-        public final A first;
-        public final B second;
-
-        public TwoTuple(A a, B b) {
-            this.first = a;
-            this.second = b;
-        }
+                (t, commentBeen, commentBeen2) -> new DetailBean<T>(t,commentBeen,commentBeen2));
     }
 }
